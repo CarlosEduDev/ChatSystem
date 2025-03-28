@@ -10,14 +10,24 @@ public class Conversa {
         if(conversantes.size() < 2){
             System.out.println("A conversa deve ter pelo menos 2 participantes");
         }
-        this.participantes = new ArrayList<>();
+        this.participantes = new ArrayList<>(conversantes);
         this.mensagens = new ArrayList<>();
+    }
+
+    public void adicionarMensagem(Mensagem mensagem){
+        mensagens.add(mensagem);
+    }
+
+    public ArrayList<Usuario> getParticipantes() {
+        return participantes;
+    }
+
+    public ArrayList<Mensagem> getMensagens() {
+        return mensagens;
     }
 
     @Override
     public String toString() {
-        return "*** Conversa ***" +
-                "\nparticipantes = " + participantes +
-                "\nmensagens = " + mensagens;
+        return "\nmensagens = " + mensagens;
     }
 }
