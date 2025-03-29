@@ -14,7 +14,7 @@ public class Conversa {
         this.mensagens = new ArrayList<>();
     }
 
-    public void adicionarMensagem(Mensagem mensagem){
+    protected void adicionarMensagem(Mensagem mensagem){
         mensagens.add(mensagem);
     }
 
@@ -28,6 +28,6 @@ public class Conversa {
 
     @Override
     public String toString() {
-        return "\nmensagens = " + mensagens;
+        return "conversa: " + mensagens;
     }
 }

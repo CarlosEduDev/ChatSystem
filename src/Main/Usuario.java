@@ -12,13 +12,6 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public boolean verificarSenha(){
-        if(this.senha.length() < 6){
-            return false;
-        }
-        return true;
-    }
-
     public int getId() {
         return id;
     }
@@ -37,6 +30,6 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "\nnome: " + nome;
+        return nome;
     }
 }

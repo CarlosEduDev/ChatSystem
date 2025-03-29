@@ -1,5 +1,6 @@
 package Main;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Mensagem {
@@ -32,14 +33,11 @@ public class Mensagem {
         return autor;
     }
 
-    public Date getHorarioEnvio() {
-        return horarioEnvio;
-    }
-
     @Override
     public String toString() {
-        return "--- Mensagem ---" +
-                "\nconteudo = " + conteudo +
-                "\nautor = " + autor;
+        SimpleDateFormat formatador = new SimpleDateFormat("HH:mm:ss");
+        String horarioFormatado = formatador.format(horarioEnvio);
+        return "[" + horarioFormatado + "] " +
+                autor.getNome()+ ": " + conteudo;
     }
 }

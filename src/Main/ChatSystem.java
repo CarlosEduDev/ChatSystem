@@ -2,30 +2,43 @@ package Main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class ChatSystem {
     private HashMap<Integer, Usuario> usuarios = new HashMap<>();
     private ArrayList<Conversa> conversas = new ArrayList<>();
 
-    public void cadastrarUsuario(Usuario user){
+    public boolean cadastrarUsuario(Usuario user){
 
         if(usuarios.containsValue(user.getId())){
             System.out.println("Usuário com ID " + user.getId() + " já existe!");
-            return;
+            return false;
         }
 
         usuarios.put(user.getId(), user);
-        System.out.println("Usuário " + user.getNome() + " criado com sucesso!");
+        System.out.println("Usuário " + user.getNome() + " cadastrado com sucesso!");
+        return true;
     }
 
-    public void deletarUsuario(int id){
+    public boolean deletarUsuario(int id){
         Usuario usuarioRemovido = usuarios.remove(id);
 
-        // Remove o usuário das conversas
-        for(Conversa conversa : conversas){
-            conversa.getParticipantes().removeIf(participante -> participante.getId() == id);
+        if(usuarioRemovido != null){ // se o usuario foi encontrado
+            // Remove o usuário das conversas
+            for(Conversa conversa : conversas){
+                ArrayList<Usuario> participantes = conversa.getParticipantes();
+                for(int i = participantes.size() - 1; i >=0; i--){
+                    if(participantes.get(i).getId() == id){
+                        participantes.remove(i);
+                    }
+                }
+            }
+            System.out.println("Usuário com id " + id + " removido com sucesso.");
+            return true;
         }
-        System.out.println("Usuário com id " + id + " removido com sucesso.");
+
+        System.out.println("Usuário com ID " + id + " não existe");
+        return false;
     }
 
     public void criarConversa(ArrayList<Usuario> participantes){
@@ -37,22 +50,21 @@ public class ChatSystem {
         System.out.println("Conversa criada com sucesso!");
     }
 
-    public void enviarMensagem(Usuario users, Conversa chat, String conteudo){
+    public void enviarMensagem(Usuario user, Conversa chat, Mensagem msg){
         // Somente usuários que participam da conversa podem enviar mensagens
-        if(!chat.getParticipantes().contains(users)){
-            System.out.println("O usuário " + users.getNome() + " não participa da conversa!");
+        if(!chat.getParticipantes().contains(user)){
+            System.out.println("O usuário " + user.getNome() + " não participa da conversa!");
+            return;
         }
 
         // tem ID único dentro da conversa
-        Mensagem msg = new Mensagem(conteudo, users);
         chat.adicionarMensagem(msg);
-        System.out.println("Mensagem enviada.");
     }
 
     public void excluirMensagem(Usuario autor, Conversa chat, int idMsg){
         for(Mensagem mensagem : chat.getMensagens()){
-            if(mensagem.getId() == idMsg && mensagem.getAutor().getNome().equals(autor)){
-                mensagem.setConteudo(autor.getNome() + " apagou a mensagem");
+            if(mensagem.getId() == idMsg && mensagem.getAutor().equals(autor)){
+                mensagem.setConteudo("-- apagou a mensagem --");
                 return;
             }
         }
@@ -60,11 +72,11 @@ public class ChatSystem {
         System.out.println("Mensagem não encontrada ou você não tem permissão para apagar a mensagem.");
     }
 
-    public void exibirConversa(Mensagem mensagem, Usuario user){
-        // O sistema deve exibir todas as mensagens de uma conversa, mostrando:
-        //[horário de envio] nome do usuário: conteúdo da mensagem
+    public void exibirConversa(Conversa conversa){
 
-        System.out.println("[" + mensagem.getHorarioEnvio().getHours() + ":" + mensagem.getHorarioEnvio().getMinutes() + ":" + mensagem.getHorarioEnvio().getSeconds() + "]" + ' ' + user.getNome() + ": " + mensagem.getConteudo());
+        for(int i = 0; i < conversa.getMensagens().size(); i++){
+            System.out.println(conversa.getMensagens().get(i));
+        }
     }
 
     @Override
