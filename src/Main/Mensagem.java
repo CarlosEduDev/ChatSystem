@@ -29,8 +29,8 @@ public class Mensagem {
         this.conteudo = conteudo;
     }
 
-    public Usuario getAutor() {
-        return autor;
+    public String getAutor() {
+        return autor.getNome();
     }
 
     @Override
@@ -38,6 +38,6 @@ public class Mensagem {
         SimpleDateFormat formatador = new SimpleDateFormat("HH:mm:ss");
         String horarioFormatado = formatador.format(horarioEnvio);
         return "[" + horarioFormatado + "] " +
-                autor.getNome()+ ": " + conteudo;
+                autor.getNome()+ ": " + conteudo + " - Id(" + id + ')';
     }
 }

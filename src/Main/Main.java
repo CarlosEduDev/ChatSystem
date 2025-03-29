@@ -3,73 +3,124 @@ package Main;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static java.lang.System.exit;
+
 public class Main {
     public static void main(String[] args) {
-        ArrayList<Usuario> participantes = new ArrayList<>();
         Scanner sc = new Scanner(System.in);
-//
-//        System.out.println("Digite seu nome:");
-//        String nome = sc.nextLine();
-//
-//        System.out.println("Digite seu email:");
-//        String email = sc.nextLine();
-//
-//        String senha;
-//
-//        do{
-//            System.out.println("Digite sua senha: ");
-//            senha = sc.nextLine();
-//            if(senha.length() < 6){
-//                System.out.println("A senha deve conter no mínimo 6 caracteres!");
-//            }
-//        }while (senha.length() < 6);
-        Usuario user1 = new Usuario("João", "joao@email.com", "joao123");
-//
-//        System.out.println("Digite o nome do outro usuário:");
-//        nome = sc.nextLine();
-//
-//        System.out.println("Digite o email do outro usuário:");
-//        email = sc.nextLine();
-//
-//        String senha2;
-//
-//        do{
-//            System.out.println("Digite a senha do outro usuário: ");
-//            senha2 = sc.nextLine();
-//            if(senha2.length() < 6){
-//                System.out.println("A senha deve conter no mínimo 6 caracteres!");
-//            }
-//        }while (senha2.length() < 6);
-        Usuario user2 = new Usuario("Carlos", "carlos@email.com", "carlos123");
-
+        ArrayList<Usuario> participantes = new ArrayList<>();
         ChatSystem chatSystem = new ChatSystem();
 
-        if(chatSystem.cadastrarUsuario(user1))
-            participantes.add(user1);
+        while (true){
 
-        if(chatSystem.cadastrarUsuario(user2))
-            participantes.add(user2);
+            System.out.println("--- ChatSystem ---");
+            System.out.println("O que deseja fazer?");
+            System.out.println("1 - Criar Usuário");
+            System.out.println("2 - Deletar um usuário");
+            System.out.println("3 - Criar conversa");
+            System.out.println("4 - Enviar mensagem");
+            System.out.println("5 - Excluir mensagem");
+            System.out.println("6 - Exibir conversas");
+            System.out.println("7 - Exibir participantes da conversa");
+            System.out.println("8 - Exibir informações dos participantes da conversa");
+            System.out.println("0 - Sair do ChatSystem");
+            System.out.printf("Digite uma opção: ");
+            int opc = sc.nextInt();
+
+            sc.nextLine();
+            switch (opc){
+                case 1:
+                    System.out.println("Digite seu nome:");
+                    String nome = sc.nextLine();
+
+                    System.out.println("Digite seu email:");
+                    String email = sc.nextLine();
+
+                    String senha;
+                    do{
+                        System.out.println("Digite sua senha: ");
+                        senha = sc.nextLine();
+                        if(senha.length() < 6){
+                            System.out.println("A senha deve conter no mínimo 6 caracteres!");
+                        }
+                    }while (senha.length() < 6);
 
 
-        Conversa chat = new Conversa(participantes);
+                    Usuario novoUsuario = new Usuario(nome, email, senha);
+                    if(chatSystem.cadastrarUsuario(novoUsuario))
+                        participantes.add(novoUsuario);
+                    break;
+                case 2:
+                    System.out.printf("Digite o ID do usuário: ");
+                    int idUser = sc.nextInt();
+                    chatSystem.deletarUsuario(idUser);
+                    break;
+                case 3: chatSystem.criarConversa(participantes);break;
+                case 4:
+                    System.out.printf("Digite o id de quem irá mandar mensagem: ");
+                    int autorId = sc.nextInt();
+                    sc.nextLine();
 
-        System.out.printf(user1.getNome() + " Digite a mensagem: ");
-        String msg1 = sc.next();
-        Mensagem msg = new Mensagem(msg1, user1);
+                    Usuario rementente = null;
 
-        System.out.printf(user2.getNome() + " Digite a mensagem: ");
-        String msg02 = sc.next();
-        Mensagem msg2 = new Mensagem(msg02, user2);
+                    for(Usuario user : participantes){
+                        if(user.getId() == autorId){
+                            rementente = user;
+                            break;
+                        }
+                    }
 
-//        chatSystem.deletarUsuario(1);
+                    if(rementente == null){
+                        System.out.println("Usuário não encontrado");
+                        break;
+                    }
 
-        chatSystem.criarConversa(participantes);
-        chatSystem.enviarMensagem(user1, chat, msg);
-        chatSystem.excluirMensagem(user1, chat, 1);
-        chatSystem.enviarMensagem(user2, chat, msg2);
+                    System.out.printf(rementente.getNome() + " Digite: ");
+                    String msg = sc.nextLine();
 
-        chatSystem.exibirConversa(chat);
+                    chatSystem.enviarMensagem(rementente, chatSystem.getConversas().get(0) , new Mensagem(msg, rementente));
+                    break;
+                case 5:
+                    System.out.println("Digite o nome do autor da mensagem:");
+                    String autor = sc.nextLine();
 
+                    System.out.println("Digite o ID da mensagem para deletar:");
+                    int idMsg = sc.nextInt();
 
-    }
+                    chatSystem.excluirMensagem(autor, chatSystem.getConversas().get(0), idMsg);
+                    break;
+                case 6:
+                    if(chatSystem.getConversas().isEmpty()){
+                        System.out.println("Nenhuma conversa disponível");
+                    }
+                    else
+                        chatSystem.exibirConversa(chatSystem.getConversas().get(0));
+                    break;
+
+                case 7:
+                    System.out.println("Participantes da conversa:");
+                    if(participantes.isEmpty())
+                        System.out.println("Não existe nenhum participante da conversa!");
+                    for (Usuario user : participantes){
+                        System.out.println(user);
+                    }
+                    break;
+                case 8:
+                    System.out.println("Informações dos participantes da conversa:");
+                    for (int i = 0; i < participantes.size(); i++){
+                        System.out.printf("Nome: " + participantes.get(i).getNome());
+                        System.out.println(" | Email:" + participantes.get(i).getEmail());
+                    }
+
+                    break;
+                case 0:
+                    System.out.println("Encerrando o ChatSystem...");
+                    return;
+                default:
+                    System.out.println("opção incorreta, tente novamente!");
+                    break;
+            }
+        }
+        }
+
 }

@@ -20,6 +20,11 @@ public class ChatSystem {
         return true;
     }
 
+    public void novoUsuario(Usuario user){
+        usuarios.put(user.getId(), user);
+        System.out.println("Usuário " + user.getNome() + " criado com sucesso!");
+    }
+
     public boolean deletarUsuario(int id){
         Usuario usuarioRemovido = usuarios.remove(id);
 
@@ -61,9 +66,9 @@ public class ChatSystem {
         chat.adicionarMensagem(msg);
     }
 
-    public void excluirMensagem(Usuario autor, Conversa chat, int idMsg){
+    public void excluirMensagem(String autor, Conversa chat, int idMsg){
         for(Mensagem mensagem : chat.getMensagens()){
-            if(mensagem.getId() == idMsg && mensagem.getAutor().equals(autor)){
+            if(mensagem.getId() == idMsg && mensagem.getAutor().equalsIgnoreCase(autor)){
                 mensagem.setConteudo("-- apagou a mensagem --");
                 return;
             }
@@ -77,6 +82,10 @@ public class ChatSystem {
         for(int i = 0; i < conversa.getMensagens().size(); i++){
             System.out.println(conversa.getMensagens().get(i));
         }
+    }
+
+    public ArrayList<Conversa> getConversas() {
+        return conversas;
     }
 
     @Override
