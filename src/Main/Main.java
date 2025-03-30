@@ -3,8 +3,6 @@ package Main;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import static java.lang.System.exit;
-
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -18,7 +16,7 @@ public class Main {
             System.out.println("1 - Criar Usuário");
             System.out.println("2 - Deletar um usuário");
             System.out.println("3 - Criar conversa");
-            System.out.println("4 - Enviar mensagem");
+            System.out.println("4 - Conversar");
             System.out.println("5 - Excluir mensagem");
             System.out.println("6 - Exibir conversas");
             System.out.println("7 - Exibir participantes da conversa");
@@ -57,29 +55,52 @@ public class Main {
                     break;
                 case 3: chatSystem.criarConversa(participantes);break;
                 case 4:
-                    System.out.printf("Digite o id de quem irá mandar mensagem: ");
-                    int autorId = sc.nextInt();
-                    sc.nextLine();
+                    System.out.printf("Digite o ID do primeiro participante: ");
+                    int user1Id = sc.nextInt();
 
-                    Usuario rementente = null;
+                    System.out.printf("Digite o ID do primeiro participante: ");
+                    int user2Id = sc.nextInt();
+                    sc.nextLine(); // Limpa o buffer sla
 
-                    for(Usuario user : participantes){
-                        if(user.getId() == autorId){
-                            rementente = user;
-                            break;
-                        }
+                    Usuario user1 = null, user2 = null;
+                    for (Usuario user : participantes) {
+                        if (user.getId() == user1Id) user1 = user;
+                        if (user.getId() == user2Id) user2 = user;
+
                     }
 
-                    if(rementente == null){
-                        System.out.println("Usuário não encontrado");
+                    if (user1 == null || user2 == null) {
+                        System.out.println("Um dos usuários não foi encontrado!");
                         break;
                     }
 
-                    System.out.printf(rementente.getNome() + " Digite: ");
-                    String msg = sc.nextLine();
+                    // Verifica se há conversas disponíveis antes de acessar
+                    if (chatSystem.getConversas().isEmpty()) {
+                        System.out.println("Nenhuma conversa disponível! Por favor, crie uma conversa.");
+                        break;
+                    }
 
-                    chatSystem.enviarMensagem(rementente, chatSystem.getConversas().get(0) , new Mensagem(msg, rementente));
+                    Conversa conversaAtual = chatSystem.getConversas().get(0);
+
+                    System.out.println("Digite suas mensagens. Digite 'sair' para encerrar a conversa.");
+
+                    Usuario remetente = user1;
+                    while (true) {
+                        System.out.printf(remetente.getNome() + ": ");
+                        String msg = sc.nextLine();
+
+                        if (msg.equalsIgnoreCase("sair")) {
+                            System.out.println("Conversa encerrada.");
+                            break;
+                        }
+
+                        chatSystem.enviarMensagem(remetente, conversaAtual, new Mensagem(msg, remetente));
+
+                        // alterna entre usuários
+                        remetente = (remetente == user1) ? user2 : user1;
+                    }
                     break;
+
                 case 5:
                     System.out.println("Digite o nome do autor da mensagem:");
                     String autor = sc.nextLine();

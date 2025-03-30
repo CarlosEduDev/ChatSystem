@@ -1,6 +1,6 @@
 package Main;
 
-import java.text.SimpleDateFormat;
+import java.text.SimpleDateFormat; // só pra formatar o horário da classe Date
 import java.util.Date;
 
 public class Mensagem {

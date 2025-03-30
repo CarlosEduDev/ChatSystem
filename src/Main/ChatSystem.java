@@ -2,7 +2,6 @@ package Main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class ChatSystem {
     private HashMap<Integer, Usuario> usuarios = new HashMap<>();
@@ -18,11 +17,6 @@ public class ChatSystem {
         usuarios.put(user.getId(), user);
         System.out.println("Usuário " + user.getNome() + " cadastrado com sucesso!");
         return true;
-    }
-
-    public void novoUsuario(Usuario user){
-        usuarios.put(user.getId(), user);
-        System.out.println("Usuário " + user.getNome() + " criado com sucesso!");
     }
 
     public boolean deletarUsuario(int id){
