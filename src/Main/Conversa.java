@@ -7,9 +7,6 @@ public class Conversa {
     private ArrayList<Mensagem> mensagens;
 
     public Conversa(ArrayList<Usuario> conversantes){
-        if(conversantes.size() < 2){
-            System.out.println("A conversa deve ter pelo menos 2 participantes");
-        }
         this.participantes = new ArrayList<>(conversantes);
         this.mensagens = new ArrayList<>();
     }

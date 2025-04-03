@@ -8,7 +8,9 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         ArrayList<Usuario> participantes = new ArrayList<>();
         ChatSystem chatSystem = new ChatSystem();
+        Login login = new Login(chatSystem);
 
+        // Antes de ir para a 4ª opção(Conversar), primeiro precisa criar 2 ou mais usuários
         while (true){
 
             System.out.println("--- ChatSystem ---");
@@ -16,33 +18,32 @@ public class Main {
             System.out.println("1 - Criar Usuário");
             System.out.println("2 - Deletar um usuário");
             System.out.println("3 - Criar conversa");
-            System.out.println("4 - Conversar");
+            System.out.println("4 - Iniciar conversa");
             System.out.println("5 - Excluir mensagem");
             System.out.println("6 - Exibir conversas");
             System.out.println("7 - Exibir participantes da conversa");
             System.out.println("8 - Exibir informações dos participantes da conversa");
             System.out.println("0 - Sair do ChatSystem");
-            System.out.printf("Digite uma opção: ");
+            System.out.print("Digite uma opção: ");
             int opc = sc.nextInt();
 
             sc.nextLine();
             switch (opc){
                 case 1:
-                    System.out.println("Digite seu nome:");
+                    System.out.printf("Digite seu nome: ");
                     String nome = sc.nextLine();
 
-                    System.out.println("Digite seu email:");
+                    System.out.print("Digite seu email: ");
                     String email = sc.nextLine();
 
                     String senha;
                     do{
-                        System.out.println("Digite sua senha: ");
+                        System.out.print("Digite sua senha: ");
                         senha = sc.nextLine();
                         if(senha.length() < 6){
                             System.out.println("A senha deve conter no mínimo 6 caracteres!");
                         }
                     }while (senha.length() < 6);
-
 
                     Usuario novoUsuario = new Usuario(nome, email, senha);
                     if(chatSystem.cadastrarUsuario(novoUsuario))
@@ -66,7 +67,6 @@ public class Main {
                     for (Usuario user : participantes) {
                         if (user.getId() == user1Id) user1 = user;
                         if (user.getId() == user2Id) user2 = user;
-
                     }
 
                     if (user1 == null || user2 == null) {
@@ -74,7 +74,6 @@ public class Main {
                         break;
                     }
 
-                    // Verifica se há conversas disponíveis antes de acessar
                     if (chatSystem.getConversas().isEmpty()) {
                         System.out.println("Nenhuma conversa disponível! Por favor, crie uma conversa.");
                         break;
@@ -128,7 +127,7 @@ public class Main {
                     break;
                 case 8:
                     System.out.println("Informações dos participantes da conversa:");
-                    for (int i = 0; i < participantes.size(); i++){
+                    for(int i = 0; i < participantes.size(); i++){
                         System.out.printf("Nome: " + participantes.get(i).getNome());
                         System.out.println(" | Email:" + participantes.get(i).getEmail());
                     }
@@ -143,5 +142,4 @@ public class Main {
             }
         }
         }
-
 }

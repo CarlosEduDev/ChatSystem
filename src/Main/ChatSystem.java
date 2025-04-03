@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ChatSystem {
-    private HashMap<Integer, Usuario> usuarios = new HashMap<>();
+    public HashMap<Integer, Usuario> usuarios = new HashMap<>();
     private ArrayList<Conversa> conversas = new ArrayList<>();
 
     public boolean cadastrarUsuario(Usuario user){
@@ -44,9 +44,11 @@ public class ChatSystem {
         if(participantes.size() < 2){
             System.out.println("Erro: Não foi possível criar a conversa, pois é necessário ter ao menos 2 participantes.");
         }
-        Conversa novaConversa = new Conversa(participantes);
-        conversas.add(novaConversa);
-        System.out.println("Conversa criada com sucesso!");
+        else{
+            Conversa novaConversa = new Conversa(participantes);
+            conversas.add(novaConversa);
+            System.out.println("Conversa criada com sucesso!");
+        }
     }
 
     public void enviarMensagem(Usuario user, Conversa chat, Mensagem msg){
@@ -80,6 +82,10 @@ public class ChatSystem {
 
     public ArrayList<Conversa> getConversas() {
         return conversas;
+    }
+
+    public HashMap<Integer, Usuario> getUsuarios() {
+        return usuarios;
     }
 
     @Override
