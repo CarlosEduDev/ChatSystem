@@ -9,7 +9,7 @@ public class ChatSystem {
 
     public boolean cadastrarUsuario(Usuario user){
 
-        if(usuarios.containsValue(user.getId())){
+        if(usuarios.containsKey(user.getId())){
             System.out.println("Usuário com ID " + user.getId() + " já existe!");
             return false;
         }
