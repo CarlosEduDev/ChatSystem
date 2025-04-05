@@ -29,8 +29,8 @@ public class Mensagem {
         this.conteudo = conteudo;
     }
 
-    public String getAutor() {
-        return autor.getNome();
+    public Usuario getAutor() {
+        return autor;
     }
 
     @Override

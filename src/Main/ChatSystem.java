@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ChatSystem {
-    public HashMap<Integer, Usuario> usuarios = new HashMap<>();
+    private HashMap<Integer, Usuario> usuarios = new HashMap<>();
     private ArrayList<Conversa> conversas = new ArrayList<>();
 
     public boolean cadastrarUsuario(Usuario user){
@@ -25,18 +25,16 @@ public class ChatSystem {
         if(usuarioRemovido != null){ // se o usuario foi encontrado
             // Remove o usuário das conversas
             for(Conversa conversa : conversas){
-                ArrayList<Usuario> participantes = conversa.getParticipantes();
-                for(int i = participantes.size() - 1; i >=0; i--){
-                    if(participantes.get(i).getId() == id){
-                        participantes.remove(i);
-                    }
-                }
-            }
-            System.out.println("Usuário com id " + id + " removido com sucesso.");
-            return true;
-        }
+                conversa.getMensagens().removeIf(msg -> msg.getAutor().getId() == id);
+                conversa.getParticipantes().removeIf(p -> p.getId() == id);
 
-        System.out.println("Usuário com ID " + id + " não existe");
+            }
+            System.out.println("Usuário " + usuarioRemovido.getNome() + " com id " + id + " removido com sucesso.");
+            return true;
+        }else
+            System.out.println("Usuário com ID " + id + " não existe");
+
+
         return false;
     }
 
@@ -51,21 +49,22 @@ public class ChatSystem {
         }
     }
 
-    public void enviarMensagem(Usuario user, Conversa chat, Mensagem msg){
+    public boolean enviarMensagem(Usuario user, Conversa chat, Mensagem msg){
         // Somente usuários que participam da conversa podem enviar mensagens
         if(!chat.getParticipantes().contains(user)){
             System.out.println("O usuário " + user.getNome() + " não participa da conversa!");
-            return;
+            return true;
         }
 
         // tem ID único dentro da conversa
         chat.adicionarMensagem(msg);
+        return false;
     }
 
-    public void excluirMensagem(String autor, Conversa chat, int idMsg){
+    public void excluirMensagem(Usuario autor, Conversa chat, int idMsg){
         for(Mensagem mensagem : chat.getMensagens()){
-            if(mensagem.getId() == idMsg && mensagem.getAutor().equalsIgnoreCase(autor)){
-                mensagem.setConteudo("-- apagou a mensagem --");
+            if(mensagem.getId() == idMsg && mensagem.getAutor().getId() == autor.getId()){
+                mensagem.setConteudo("apagou a mensagem ");
                 return;
             }
         }
@@ -87,6 +86,8 @@ public class ChatSystem {
     public HashMap<Integer, Usuario> getUsuarios() {
         return usuarios;
     }
+
+
 
     @Override
     public String toString() {

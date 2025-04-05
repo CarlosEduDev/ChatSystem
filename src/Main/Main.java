@@ -6,27 +6,28 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        ArrayList<Usuario> participantes = new ArrayList<>();
-        ArrayList<Usuario> usuariosCadastrados = new ArrayList<>();
+        ArrayList<Usuario> participantes = new ArrayList<>(); // deletarUsuario == true = removo
+        ArrayList<Usuario> usuariosCadastrados = new ArrayList<>(); // deletarUsuario == true = removo
+        ArrayList<Usuario> usuariosNaConversa = new ArrayList<>(); // deletarUsuario == true = removo
         ChatSystem chatSystem = new ChatSystem();
         Login login = new Login(chatSystem);
 
         // Antes de tudo, primeiro precisa criar 2 ou mais usuários
         // Vai ser tipo whatsapp, mas vai ter a parte que o usuário vai logar(se já foi cadastrado) e adiciona contatos(usuários)
+        // A conversa não pode ter menos que 2 usuários
         while (true){
 
             System.out.println("--- ChatSystem ---");
             System.out.println("O que deseja fazer?");
-            System.out.println("1 - Criar/Cadastrar Usuário");
-            System.out.println("2 - Fazer login");
+            System.out.println("1 - Criar/Cadastrar Usuário"); // apenas cadastra e adiciona a lista de usuários cadastrados
+            System.out.println("2 - Fazer login"); // faz o login do usuário pra poder criar conversas e conversar
             System.out.println("3 - Deletar um usuário");
-            System.out.println("4 - Criar conversa");
+            System.out.println("4 - Criar conversa"); // pode criar mais de uma conversa com usuarios diferentes
             System.out.println("5 - Iniciar conversa");
             System.out.println("6 - Excluir mensagem");
             System.out.println("7 - Exibir conversas");
             System.out.println("8 - Exibir participantes da conversa");
-            System.out.println("9 - Exibir informações dos participantes da conversa");
-            System.out.println("10 - Exibir informações dos usuários cadastrados no sistema");
+            System.out.println("9 - Exibir informações dos usuários cadastrados no sistema");
             System.out.println("0 - Sair do ChatSystem");
             System.out.print("Digite uma opção: ");
             int opc = sc.nextInt();
@@ -71,26 +72,44 @@ public class Main {
                 case 3:
                     System.out.printf("Digite o ID do usuário: ");
                     int idUser = sc.nextInt();
-                    chatSystem.deletarUsuario(idUser);
+                    boolean removido = chatSystem.deletarUsuario(idUser);
+
+                    if(removido){
+                        usuariosCadastrados.removeIf(usuario -> usuario.getId() == idUser);
+                        usuariosNaConversa.removeIf(usuario -> usuario.getId() == idUser);
+                        participantes.removeIf(participante -> participante.getId() == idUser);
+                    }
                     break;
                 case 4: chatSystem.criarConversa(participantes); break;
                 case 5:
-                    System.out.printf("Digite o ID do primeiro participante: ");
-                    int user1Id = sc.nextInt();
+                    System.out.print("Quantos participantes deseja que tenha na conversa?: ");
+                    int qntParticipantes = sc.nextInt();
+                    sc.nextLine(); // limpa buffer
 
-                    System.out.printf("Digite o ID do primeiro participante: ");
-                    int user2Id = sc.nextInt();
-                    sc.nextLine(); // Limpa o buffer sla
-
-                    Usuario user1 = null, user2 = null;
-                    for (Usuario user : participantes) {
-                        if (user.getId() == user1Id) user1 = user;
-                        if (user.getId() == user2Id) user2 = user;
+                    if (qntParticipantes < 2) {
+                        System.out.println("A conversa precisa de pelo menos 2 participantes.");
+                        break;
                     }
 
-                    if (user1 == null || user2 == null) {
-                        System.out.println("Um dos usuários não foi encontrado!");
-                        break;
+                    for (int i = 0; i < qntParticipantes; i++) {
+                        System.out.printf("Digite o ID do participante %d: ", i + 1);
+                        int id = sc.nextInt();
+                        sc.nextLine(); // limpa buffer
+
+                        Usuario encontrado = null;
+                        for (Usuario user : participantes) {
+                            if (user.getId() == id) {
+                                encontrado = user;
+                                break;
+                            }
+                        }
+
+                        if (encontrado == null) {
+                            System.out.println("Usuário com esse ID não encontrado ou não está logado.");
+                            break;
+                        } else {
+                            usuariosNaConversa.add(encontrado);
+                        }
                     }
 
                     if (chatSystem.getConversas().isEmpty()) {
@@ -98,13 +117,14 @@ public class Main {
                         break;
                     }
 
-                    Conversa conversaAtual = chatSystem.getConversas().get(0);
+                    Conversa conversaAtual = chatSystem.getConversas().getFirst();
 
                     System.out.println("Digite suas mensagens. Digite 'sair' para encerrar a conversa.");
 
-                    Usuario remetente = user1;
+                    int indiceRemetente = 0;
                     while (true) {
-                        System.out.printf(remetente.getNome() + ": ");
+                        Usuario remetente = usuariosNaConversa.get(indiceRemetente);
+                        System.out.print(remetente.getNome() + ": ");
                         String msg = sc.nextLine();
 
                         if (msg.equalsIgnoreCase("sair")) {
@@ -114,18 +134,32 @@ public class Main {
 
                         chatSystem.enviarMensagem(remetente, conversaAtual, new Mensagem(msg, remetente));
 
-                        // alterna entre usuários
-                        remetente = (remetente == user1) ? user2 : user1;
+                        // Alterna entre participantes
+                        indiceRemetente = (indiceRemetente + 1) % usuariosNaConversa.size();
                     }
                     break;
+
                 case 6:
                     System.out.println("Digite o nome do autor da mensagem:");
-                    String autor = sc.nextLine();
+                    String nomeAutor = sc.nextLine();
 
-                    System.out.println("Digite o ID da mensagem para deletar:");
+                    Usuario autorMsg = null;
+                    for(Usuario user : usuariosCadastrados){
+                        if(user.getNome().equals(nomeAutor)){
+                            autorMsg = user;
+                            break;
+                        }
+                    }
+
+                    if(autorMsg == null){
+                        System.out.println("Autor da mensagem não encontrado.");
+                        break;
+                    }
+
+                    System.out.print("Digite o ID da mensagem para deletar: ");
                     int idMsg = sc.nextInt();
 
-                    chatSystem.excluirMensagem(autor, chatSystem.getConversas().get(0), idMsg);
+                    chatSystem.excluirMensagem(autorMsg, chatSystem.getConversas().get(0), idMsg);
                     break;
 
                 case 7:
@@ -146,24 +180,13 @@ public class Main {
                     break;
 
                 case 9:
-                    System.out.println("Informações dos participantes da conversa:");
-                    if(participantes.isEmpty()){
-                        System.out.println("Nenhum participante na conversa.");
-                    }
-                    for(int i = 0; i < participantes.size(); i++){
-                        System.out.printf("Nome: " + participantes.get(i).getNome());
-                        System.out.print(" | Email:" + participantes.get(i).getEmail());
-                        System.out.println(" | ID:" + participantes.get(i).getId());
-                    }
-                    break;
-                case 10:
                     System.out.println("Informações dos usuários cadastrados");
-                    if(usuariosCadastrados.isEmpty())
+                    if(chatSystem.getUsuarios().isEmpty())
                         System.out.println("Nenhum usuário cadastrado!");
-                    for(int i = 0; i < usuariosCadastrados.size(); i++){
-                        System.out.print("Nome: " + usuariosCadastrados.get(i).getNome());
-                        System.out.print(" | Email: " + usuariosCadastrados.get(i).getEmail());
-                        System.out.println(" | ID: " + usuariosCadastrados.get(i).getId());
+                    for(Usuario user : chatSystem.getUsuarios().values()){
+                        System.out.print("Nome: " + user.getNome());
+                        System.out.print(" | Email: " + user.getEmail());
+                        System.out.println(" | ID: " + user.getId());
                     }
                     break;
                 case 0:
