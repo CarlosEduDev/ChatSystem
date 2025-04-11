@@ -1,4 +1,4 @@
-package Main;
+package main;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -124,6 +124,10 @@ public class Main {
                     int indiceRemetente = 0;
                     while (true) {
                         Usuario remetente = usuariosNaConversa.get(indiceRemetente);
+//                        if(remetente == null){
+//                            System.out.println("O usuário não existe");
+//                            break;
+//                        }
                         System.out.print(remetente.getNome() + ": ");
                         String msg = sc.nextLine();
 
